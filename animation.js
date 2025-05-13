@@ -65,6 +65,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get finger element and photo elements
     const fingerElement = document.getElementById('finger-container');
     const animationContainer = document.querySelector('.animation-container');
+    const bookContainer = document.getElementById('book-container');
+    const bookSVGElement = bookContainer.querySelector('svg');
+    
     const photoElements = {
         photo1: {
             overlay: document.getElementById('photo1-overlay'),
@@ -80,10 +83,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // Define relative positions as percentages of the container size
-    // These percentages are based on the original fixed positions relative to container size
+    // Define relative positions as percentages of the book SVG size (not container)
+    // These percentages are based on the original fixed positions relative to SVG size
     const relativePositions = {
-        finger: { xOffset: 8, yOffset: 12 }, // Percentage offsets for finger position
+        finger: { xOffset: 6, yOffset: 4 }, // Percentage offsets for finger position
         photos: {
             photo3: { x: 22.5, y: 28 },  // Large photo on left
             photo1: { x: 64, y: 15 },    // Top right photo
@@ -101,24 +104,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to calculate absolute positions based on container size
+    // Function to calculate absolute positions based on SVG book size and its position
     function calculatePositions() {
         const containerWidth = animationContainer.offsetWidth;
         const containerHeight = animationContainer.offsetHeight;
         
-        // Calculate actual photo positions based on container size
+        // Get book SVG dimensions and position
+        const bookRect = bookSVGElement.getBoundingClientRect();
+        const containerRect = animationContainer.getBoundingClientRect();
+        
+        // Calculate book position relative to the animation container
+        const bookPosition = {
+            left: bookRect.left - containerRect.left,
+            top: bookRect.top - containerRect.top
+        };
+        
+        // Calculate actual photo positions based on SVG size
         const photoPositions = {};
         for (const photo in relativePositions.photos) {
             photoPositions[photo] = {
-                x: (relativePositions.photos[photo].x * containerWidth) / 100,
-                y: (relativePositions.photos[photo].y * containerHeight) / 100
+                x: bookPosition.left + (relativePositions.photos[photo].x * bookRect.width) / 100,
+                y: bookPosition.top + (relativePositions.photos[photo].y * bookRect.height) / 100
             };
         }
         
         // Calculate finger offset based on container size
         const fingerOffset = {
-            x: (relativePositions.finger.xOffset * containerWidth) / 100,
-            y: (relativePositions.finger.yOffset * containerHeight) / 100
+            x: (relativePositions.finger.xOffset * bookRect.width) / 100,
+            y: (relativePositions.finger.yOffset * bookRect.height) / 100
         };
         
         // Scale finger size based on container width (with min/max limits)
@@ -133,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fingerElement.style.width = `${fingerSize.width}px`;
         fingerElement.style.height = `${fingerSize.height}px`;
         
-        return { photoPositions, fingerOffset };
+        return { photoPositions, fingerOffset, bookPosition };
     }
     
     // Function to run the animation
@@ -273,6 +286,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
     
-    // Start animation automatically
-    runAnimation();
+    // Need to wait for the book to be properly centered in the flexbox before running the animation
+    setTimeout(() => {
+        runAnimation();
+    }, 100);
 });
