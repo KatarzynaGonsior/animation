@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Get finger element and photo elements
     const fingerElement = document.getElementById('finger-container');
+    const animationContainer = document.querySelector('.animation-container');
     const photoElements = {
         photo1: {
             overlay: document.getElementById('photo1-overlay'),
@@ -79,18 +80,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // Adjusted finger tap position offset based on the finger SVG size and shape
-    const fingerOffset = {x: 160, y: 60}; // Modified offsets for better positioning
+    // Define relative positions as percentages of the container size
+    // These percentages are based on the original fixed positions relative to container size
+    const relativePositions = {
+        finger: { xOffset: 8, yOffset: 12 }, // Percentage offsets for finger position
+        photos: {
+            photo3: { x: 22.5, y: 28 },  // Large photo on left
+            photo1: { x: 64, y: 15 },    // Top right photo
+            photo2: { x: 64, y: 40 }     // Bottom right photo
+        }
+    };
     
     // Choose which photo to tap (using the large photo on the left)
     const photoToTap = 'photo3';
-    
-    // More accurate photo positions - adjusted to better match the overlays
-    const photoPositions = {
-        photo3: { x: 90, y: 84 },  // Large photo on left - adjusted x position
-        photo1: { x: 256, y: 45 }, // Top right photo
-        photo2: { x: 256, y: 120 } // Bottom right photo
-    };
     
     // Set the initial opacity for all overlays to make them visible (active state)
     for (const photo in photoElements) {
@@ -99,8 +101,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Function to calculate absolute positions based on container size
+    function calculatePositions() {
+        const containerWidth = animationContainer.offsetWidth;
+        const containerHeight = animationContainer.offsetHeight;
+        
+        // Calculate actual photo positions based on container size
+        const photoPositions = {};
+        for (const photo in relativePositions.photos) {
+            photoPositions[photo] = {
+                x: (relativePositions.photos[photo].x * containerWidth) / 100,
+                y: (relativePositions.photos[photo].y * containerHeight) / 100
+            };
+        }
+        
+        // Calculate finger offset based on container size
+        const fingerOffset = {
+            x: (relativePositions.finger.xOffset * containerWidth) / 100,
+            y: (relativePositions.finger.yOffset * containerHeight) / 100
+        };
+        
+        // Scale finger size based on container width (with min/max limits)
+        const baseFinger = { width: 51, height: 74 };
+        const scaleFactor = Math.min(Math.max(containerWidth / 400, 0.7), 1.3); // Limit scale between 0.7x and 1.3x
+        const fingerSize = {
+            width: Math.round(baseFinger.width * scaleFactor),
+            height: Math.round(baseFinger.height * scaleFactor)
+        };
+        
+        // Update finger element size
+        fingerElement.style.width = `${fingerSize.width}px`;
+        fingerElement.style.height = `${fingerSize.height}px`;
+        
+        return { photoPositions, fingerOffset };
+    }
+    
     // Function to run the animation
     function runAnimation() {
+        // Get current positions based on container size
+        const { photoPositions, fingerOffset } = calculatePositions();
+        
         // Reset finger position
         fingerElement.style.transform = 'translate(-100px, 0px)';
         fingerElement.style.opacity = '1'; // Ensure finger is fully visible at start
@@ -115,8 +155,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Function to calculate the exact finger position for tapping
         function getFingerTapPosition(photoPos) {
             return {
-                x: photoPos.x + fingerOffset.x,
-                y: photoPos.y + fingerOffset.y
+                x: photoPos.x - fingerOffset.x,
+                y: photoPos.y - fingerOffset.y
             };
         }
         
@@ -223,6 +263,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (tapIndicator) {
         tapIndicator.style.opacity = '0';
     }
+    
+    // Add window resize event listener to update animation on viewport changes
+    window.addEventListener('resize', () => {
+        // Allow time for resize to complete before recalculating
+        clearTimeout(window.resizeTimer);
+        window.resizeTimer = setTimeout(() => {
+            runAnimation();
+        }, 250);
+    });
     
     // Start animation automatically
     runAnimation();
