@@ -7,13 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
     <rect x="5" y="3" width="320" height="161.574" rx="1.39891" fill="white"/>
     <rect id="photo1" x="207" y="14" width="99" height="62" stroke="#D2DAE0" stroke-width="4"/>
     <path id="photo1-img" d="M243.244 40.5468L253.866 52.9784V52.9137L269.193 32L286 59H230L243.244 40.5468Z" fill="#D2DAE0"/>
-    <rect id="photo1-overlay" width="103" height="66" transform="translate(204.825 11.7758)" fill="#3F88C5" fill-opacity="0.45"/>
+    <rect id="photo1-overlay" width="103" height="66" transform="translate(204.825 11.7758)" fill="#3F88C5" fill-opacity="0.65"/>
     <rect id="photo2" x="206" y="89" width="99" height="62" stroke="#D2DAE0" stroke-width="4"/>
     <path id="photo2-img" d="M242.244 115.547L252.866 127.978V127.914L268.193 107L285 134H229L242.244 115.547Z" fill="#D2DAE0"/>
-    <rect id="photo2-overlay" width="103" height="66" transform="translate(204.825 86.7758)" fill="#3F88C5" fill-opacity="0.45"/>
+    <rect id="photo2-overlay" width="103" height="66" transform="translate(204.825 86.7758)" fill="#3F88C5" fill-opacity="0.65"/>
     <rect id="photo3" x="33" y="36" width="102" height="97" stroke="#D2DAE0" stroke-width="4"/>
     <path id="photo3-img" d="M64.8904 77.4656L79.3589 94.517V94.4282L100.238 65.7429L123.131 102.776H46.8505L64.8904 77.4656Z" fill="#D2DAE0"/>
-    <rect id="photo3-overlay" width="106" height="101" transform="translate(31 34)" fill="#3F88C5" fill-opacity="0.45"/>
+    <rect id="photo3-overlay" width="106" height="101" transform="translate(31 34)" fill="#3F88C5" fill-opacity="0.65"/>
     <g filter="url(#filter1_f_54_7476)">
     <rect width="7" height="164" transform="translate(168.5 1.7868)" fill="#D2DAE0"/>
     </g>
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set the initial opacity for all overlays to make them visible (active state)
     for (const photo in photoElements) {
         if (photoElements[photo].overlay) {
-            photoElements[photo].overlay.style.opacity = '0.45'; // Increased default active state opacity
+            photoElements[photo].overlay.style.opacity = '0.65'; // Increased default active state opacity
         }
     }
 
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset all photo overlays to default active state
         for (const photo in photoElements) {
             if (photoElements[photo].overlay) {
-                photoElements[photo].overlay.style.opacity = '0.45'; // Increased default active state opacity
+                photoElements[photo].overlay.style.opacity = '0.65'; // Increased default active state opacity
             }
         }
 
@@ -178,49 +178,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const sequence = [
             // Animation sequence - Just a single tap
-            // 1. Move to the target photo
+            // 1. Move to the target photo - reduced from 1000ms to 700ms
             { 
                 element: fingerElement,
                 property: 'transform',
                 from: 'translate(-100px, 0px)',
                 to: `translate(${tapPosition.x}px, ${tapPosition.y}px)`,
-                duration: 1000,
+                duration: 700,
                 easing: 'ease-out'
             },
-            // 2. Tap animation on the photo and darken the overlay
+            // 2. Tap animation on the photo and darken the overlay - reduced from 300ms to 200ms
             {
                 element: document.querySelector('#tap-finger .tap-indicator'),
                 property: 'opacity',
                 from: '0',
                 to: '1',
-                duration: 300,
+                duration: 200,
                 easing: 'ease-in'
             },
             {
                 element: photoElements[photoToTap].overlay,
                 property: 'opacity',
-                from: '0.45',
-                to: '0.8', // Increased opacity when pressed for better visibility
-                duration: 300,
+                from: '0.65',
+                to: '0.9', // Increased opacity when pressed for better visibility
+                duration: 200,
                 easing: 'ease-in'
             },
-            // Return overlay to normal active state
+            // Return overlay to normal active state - reduced from 300ms to 200ms
+            // and reduced delay from 600ms to 300ms
             {
                 element: photoElements[photoToTap].overlay,
                 property: 'opacity',
-                from: '0.8',
-                to: '0.45',
-                duration: 300,
+                from: '0.9',
+                to: '0.65',
+                duration: 200,
                 easing: 'ease-out',
-                delay: 600
+                delay: 300
             },
-            // Fade out tap animation
+            // Fade out tap animation - reduced from 300ms to 200ms
             {
                 element: document.querySelector('#tap-finger .tap-indicator'),
                 property: 'opacity',
                 from: '1',
                 to: '0',
-                duration: 300,
+                duration: 200,
                 easing: 'ease-out',
                 delay: 0
             }
@@ -249,17 +250,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // After the sequence completes, fade out the finger with a short delay
+        // Reduced delay from 500ms to 200ms, and fade duration from 800ms to 400ms
         setTimeout(() => {
             // Fade out finger without moving it
             fingerElement.animate([
                 { opacity: 1 },
                 { opacity: 0 }
             ], {
-                duration: 800,
+                duration: 400,
                 easing: 'ease-out',
                 fill: 'forwards'
             });
-        }, currentTime + 500); // Short delay of 500ms after tapping is complete
+        }, currentTime + 200); // Short delay of 200ms after tapping is complete
 
         return animations;
     }
