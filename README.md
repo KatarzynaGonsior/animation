@@ -1,26 +1,27 @@
-# SVG Animation Demo
+# Photobook Editor Tutorial Animation
 
-A simple demonstration of SVG animations using vanilla JavaScript.
+A demonstration of SVG animations for a photobook editor tutorial using vanilla JavaScript.
 
 ## Features
 
-- Three animated SVG shapes (circle, rectangle, triangle)
-- Play, Pause, and Reset controls
+- Interactive SVG animation showing a photobook with photos
+- Animated finger tap interaction demonstrating how to swap photos
+- Responsive design that adapts to different screen sizes
 - Uses the Web Animations API for smooth animations
 
 ## How to Use
 
 1. Open `index.html` in your web browser
-2. Use the control buttons to play, pause, and reset the animations
-3. Customize the animations in `animation.js` or add new SVG elements in `index.html`
+2. Watch the animation demonstrating how to tap a photo
+3. The animation shows a finger tapping the large photo with the instruction "Tap photo to swap places"
 
 ## Customization
 
-To customize the animations:
+To customize the animation:
 
-- Edit the SVG elements in `index.html`
-- Modify animation parameters in `animation.js`
-- Change the styling in `styles.css`
+- Edit the SVG elements for the book and finger in `animation.js`
+- Modify animation parameters and timing in `animation.js`
+- Change the styling and responsiveness in `styles.css`
 
 ## Technologies Used
 
@@ -29,3 +30,4 @@ To customize the animations:
 - JavaScript
 - SVG
 - Web Animations API
+- Responsive Design
